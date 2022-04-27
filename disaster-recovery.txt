@@ -1,0 +1,57 @@
+Driver installation:
+1) Verify system is up to date
+$ sudo apt update
+
+2) Verify Python3 is installed
+3) Verify pip3 is installed
+4) Install paho MQTT client https://github.com/eclipse/paho.mqtt.python
+$ pip3 install paho-mqtt
+
+5) Install VSCode
+$ sudo apt install code -y
+
+6) Edit /boot/config.txt and add or uncomment the following lines:
+dtparam=i2c_arm=on
+dtoverlay=w1-gpio
+
+7) Add the following lines to /etc/modules:
+i2c-dev
+i2c-bcm2708
+w1-gpio
+w1-therm
+
+8) Get the following package
+sudo apt-get install i2c-tools
+
+9) Reboot the Pi. After reboot the device /dev/i2c-1 should be present.
+
+10) Run this command to see devices connected to the I2C bus:
+i2cdetect -y 1
+
+11) Installing Python drivers for the BME680 temp/humidity sensor on the Pi3 (https://github.com/adafruit/Adafruit_CircuitPython_BME680):
+$ pip3 install adafruit-circuitpython-lis3dh
+$ pip3 install adafruit-circuitpython-bme680
+
+12) Run this command to check on the status of the temp probe sensor:
+$ ls /sys/bus/w1/devices/
+
+Two files should be listed. If not, go back and check the wiring for the sensor.
+
+13) Run this command and make sure tags show up on the Ignition gateway under '[MQTT Engine]weatherpi/sensors':
+$ manually-run-sensors-to-mqtt.sh
+
+Systemd installation:
+1) $ chmod 644 mqtt.service
+2) $ sudo cp mqtt.service /lib/systemd/system
+3) $ sudo systemctl daemon-reload
+4) $ sudo systemctl enable mqtt.service
+5) $ systemctl enable systemd-networkd.service systemd-networkd-wait-online.service
+6) $ sudo reboot
+7) Check the status of the service:
+$ sudo systemctl status mqtt.service
+
+Weather project
+https://www.electromaker.io/project/view/build-your-own-weather-station#
+
+Argent wind and rain sensors datasheet:
+https://argentdata.com/files/80422_datasheet.pdf
