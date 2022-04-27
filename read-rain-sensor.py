@@ -5,24 +5,7 @@ from gpiozero import Button
 from signal import pause
 from time import sleep
 
-# Argent Data Systems rain volume sensor
 
-class RainVolume():
-    def __init__(self):
-        self.interval_secs=5
-        self.drops = 0
-        self.rainBucket = Button(6)
-        self.rainBucket.when_pressed = self.onBucketDrop
-
-    def onBucketDrop(self):
-        self.drops = self.drops + 1
-        # print("onBucketDrop fired")
-
-    def getBucketDrops(self):
-        return self.drops
-
-    def resetBucketDrops(self):
-        self.rotationCount = 0
 
 bucket = RainVolume()
 
