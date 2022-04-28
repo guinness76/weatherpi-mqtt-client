@@ -4,16 +4,65 @@ import math
 from gpiozero import Button,MCP3008
 from signal import pause
 from time import sleep
+import board
+import adafruit_bme680
 
-# add the lines below to /etc/modules (reboot to take effect)
+# BME680 sensor, communicating over the board's default I2C bus
+# Vin connected to pin 17 (3.3v)
+# Ground connected to pin 9 (ground)
+# SDA connected to pin 3 (GPIO 2)
+# SCL connected to pin 5 (GPIO 3)
+#
+# Add the lines below to /etc/modules (reboot to take effect)
 # w1-gpio
 # w1-therm
+class BME680():
+    def __init__(self):
+        # Create sensor object, communicating over the board's default I2C bus
+        i2c = board.I2C()   # uses board.SCL and board.SDA
+
+        try:
+            self.bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c)
+            
+            # change this to match the location's pressure (hPa) at sea level
+            self.bme680.sea_level_pressure = 1013.25     
+        except ValueError as e:
+            print("Exception thrown while initializing atmospheric sensors: %s" % e)
+            self.bme680 = None
+
+    # Returns ambient temperature in Centigrade
+    def getTemperature(self):
+        if self.bme680 is not None:
+            return self.bme680.temperature
+        else:
+            return -255
+
+    # Returns the gas reading as ohms. This will need some work to determine how useful this value really is.
+    def getGas(self):
+        if self.bme680 is not None:
+            return self.bme680.gas
+        else:
+            return -1
+
+    # Returns the humidity as a percentage between 0 and 100 percent.
+    def getHumidity(self):
+        if self.bme680 is not None:
+            return self.bme680.relative_humidity
+        else:
+            return -1.0
+
+    # Returns the barometric pressure as millibars (hPa)
+    def getPressure(self):
+        if self.bme680 is not None:
+            return self.bme680.pressure
+        else:
+            return -1.0
 
 # Watherproof temperature probe (DS18B20), connected directly to GPIO:
 # V+ connected to pin 1 (3.3v)
 # Ground connected to pin 6 (ground)
 # Data wire connected to pin 7 (GPIO 4)
-class DS18B20(object):
+class DS18B20():
     def __init__(self):
         devices = glob.glob("/sys/bus/w1/devices/28*")
         if len(devices) == 0:
@@ -24,7 +73,7 @@ class DS18B20(object):
     def read_temp_raw(self):
         f = open(self.device_file, "r")
         lines = f.readlines()
-        print(lines)
+        #print(lines)
         f.close()
         return lines
         
@@ -60,9 +109,9 @@ class DS18B20(object):
 # Argent Data Systems wind speed and wind direction sensors- read via SPI bus on the Pi
 # Wind speed connected to pin 29 (GPIO 5) and ground
 class WindSpeed():
-    def __init__(self):
+    def __init__(self, interval_secs):
         self.radius_cm = 9.0
-        self.interval_secs=5
+        self.interval_secs=interval_secs
         self.anemometor_factor=1.18	# Used to compensate for the mass of the anemometer
         self.circumference_cm = ((2.0 * self.radius_cm) * math.pi)
         self.anemometer = Button(5)
@@ -144,8 +193,8 @@ class WindVane():
 # Argent Data Systems rain volume sensor
 # Connected to GPIO 6 (pin 31) and ground (pin 39 for convenience)
 class RainVolume():
-    def __init__(self):
-        self.interval_secs=5
+    def __init__(self, interval_secs):
+        self.interval_secs=interval_secs
         self.drops = 0
         self.rainBucket = Button(6)
         self.rainBucket.when_pressed = self.onBucketDrop

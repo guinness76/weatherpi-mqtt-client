@@ -1,0 +1,6 @@
+# broker_address: the Ignition gateway running the MQTT modules
+# username and password: specify the user name and password that is used in the Users section of the MQTT Distributor settings
+[mqtt]
+broker_address=
+username=
+password=

@@ -1,67 +1,29 @@
 #!/usr/bin/python3
-import adafruit_bme680
-import board
-import os, sys, glob, json
+import json
+import configparser
 from datetime import datetime
 import time
 import paho.mqtt.client as mqtt
+from sensors import BME680, DS18B20, WindSpeed, WindVane, RainVolume
 
-broker_address="192.168.1.184"
-username="pi"
-password="brewme18"
+# Read weatherpi.properties
+config = configparser.RawConfigParser()
+config.read('./weatherpi.properties')
+mqtt_settings = dict(config.items("mqtt"))
+
+broker_address=mqtt_settings["broker_address"]
+username=mqtt_settings["username"]
+password=mqtt_settings["password"]
+
+# First part of the path is the topic. This value needs to be defined in Subscriptions in the MQTT engine custom namespace.
 topic = "sensors"
+measure_interval_secs = 5
 
-# Weatherproof temperature probe (DS18B20), connected directly to GPIO:
-# V+ connected to pin 1 (3.3v)
-# Ground connected to pin 6 (ground)
-# Data wire connected to pin 7 (GPIO 4)
-class DS18B20(object):
-    def __init__(self):        
-        self.device_file = glob.glob("/sys/bus/w1/devices/28*")[0] + "/w1_slave"
-        
-    def read_temp_raw(self):
-        f = open(self.device_file, "r")
-        lines = f.readlines()
-        f.close()
-        return lines
-        
-    def crc_check(self, lines):
-        return lines[0].strip()[-3:] == "YES"
-        
-    def read_temp(self):
-        temp_c = -255
-        attempts = 0
-        
-        lines = self.read_temp_raw()
-        success = self.crc_check(lines)
-        
-        while not success and attempts < 3:
-            time.sleep(.2)
-            lines = self.read_temp_raw()            
-            success = self.crc_check(lines)
-            attempts += 1
-        
-        if success:
-            temp_line = lines[1]
-            equal_pos = temp_line.find("t=")            
-            if equal_pos != -1:
-                temp_string = temp_line[equal_pos+2:]
-                temp_c = float(temp_string)/1000.0
-        
-        return temp_c
-
-tempSensor = DS18B20()
-
-# BME680 sensor, communicating over the board's default I2C bus
-# Vin connected to pin 17 (3.3v)
-# Ground connected to pin 9 (ground)
-# SDA connected to pin 3 (GPIO 2)
-# SCL connected to pin 5 (GPIO 3)
-i2c = board.I2C()   # uses board.SCL and board.SDA
-bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c)
-
-# change this to match the location's pressure (hPa) at sea level
-bme680.sea_level_pressure = 1013.25
+tempProbe = DS18B20()
+bme680 = BME680()
+windSpeed = WindSpeed(measure_interval_secs)
+windVane = WindVane()
+bucket = RainVolume(measure_interval_secs)
 
 # def on_connect(client, userdata, flags, rc):
 #     #print("connected with connection status: "+str(rc))
@@ -80,20 +42,30 @@ client.connect(broker_address, 1883)
 client.loop_start()
 
 while True:
-    # First part of the path is the topic. This value needs to be defined in Subscriptions in the MQTT engine custom namespace.
-    temp = bme680.temperature   # Temp is Centrigrade
-    humidity = bme680.relative_humidity
-    gas = bme680.gas    # Gas is ohms
-    pressure = bme680.pressure  # Pressure is hPa
-    #altitude = bme680.altitude
-
     tagDict = {}
-    tagDict["bme680/ambientTemp"]= temp
-    tagDict["bme680/humidity"]= humidity
-    tagDict["bme680/gas"]=gas
-    tagDict["bme680/pressure"]=pressure
-    tagDict["ds18b20/temperature"]=tempSensor.read_temp()
-    tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    # Atmospheric sensors
+    tagDict["bme680/ambientTemp"]=bme680.getTemperature() # Temp is Centrigrade
+    tagDict["bme680/humidity"]=bme680.getHumidity() # Humidity is a float percentage between 0% and 100%
+    tagDict["bme680/gas"]=bme680.getGas() # Gas is ohms
+    tagDict["bme680/pressure"]=bme680.getPressure() # Pressure is hPa
+
+    # Temperature probe
+    tagDict["temp-probe/temperature"]=tempProbe.read_temp()
+
+    # Wind sensors
+    tagDict["wind/speed"]=windSpeed.getKmPerHour()
+    tagDict["wind/direction"]=windVane.getAngle()
+
+    # Rain sensor
+    # TODO
+    
+    # Last updated timestamp
+    tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     client.publish(topic, json.dumps(tagDict))
-    time.sleep(5)
+
+    # Reset the wind and rain objects, since they measure a quantity collected every 5 seconds
+    windSpeed.resetRotationCount()
+    bucket.resetBucketDrops()
+
+    time.sleep(measure_interval_secs)

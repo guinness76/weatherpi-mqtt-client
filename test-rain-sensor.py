@@ -7,7 +7,7 @@ from time import sleep
 
 from sensors import RainVolume
 
-bucket = RainVolume()
+bucket = RainVolume(5)
 
 print("Waiting for 5 second rain bucket test: add water now")
 #pause()
@@ -19,3 +19,5 @@ while acc<5:
 
 drops = bucket.getBucketDrops()
 print("At the end of 5 seconds, %d bucket drop(s) recorded." % drops)
+bucket.resetBucketDrops()
+print("----- Rain sensor test complete -----")
