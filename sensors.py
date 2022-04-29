@@ -193,8 +193,8 @@ class WindVane():
 # Argent Data Systems rain volume sensor
 # Connected to GPIO 6 (pin 31) and ground (pin 39 for convenience)
 class RainVolume():
-    def __init__(self, interval_secs):
-        self.interval_secs=interval_secs
+    def __init__(self):
+        self.mm_per_drop = 0.2794
         self.drops = 0
         self.rainBucket = Button(6)
         self.rainBucket.when_pressed = self.onBucketDrop
@@ -206,5 +206,9 @@ class RainVolume():
     def getBucketDrops(self):
         return self.drops
 
+    # Returns the volume in mm that has been recorded since the last reset.
+    def getVolumeMM(self):
+        return self.drops * self.mm_per_drop
+
     def resetBucketDrops(self):
-        self.rotationCount = 0
+        self.drops = 0

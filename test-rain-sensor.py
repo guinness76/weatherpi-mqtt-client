@@ -7,7 +7,7 @@ from time import sleep
 
 from sensors import RainVolume
 
-bucket = RainVolume(5)
+bucket = RainVolume()
 
 print("Waiting for 5 second rain bucket test: add water now")
 #pause()

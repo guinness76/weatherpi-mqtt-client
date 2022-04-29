@@ -8,7 +8,7 @@ from sensors import BME680, DS18B20, WindSpeed, WindVane, RainVolume
 
 # Read weatherpi.properties
 config = configparser.RawConfigParser()
-config.read('./weatherpi.properties')
+config.read('/home/pi/weatherpi-mqtt-client/weatherpi.properties')
 mqtt_settings = dict(config.items("mqtt"))
 
 broker_address=mqtt_settings["broker_address"]
@@ -23,7 +23,7 @@ tempProbe = DS18B20()
 bme680 = BME680()
 windSpeed = WindSpeed(measure_interval_secs)
 windVane = WindVane()
-bucket = RainVolume(measure_interval_secs)
+bucket = RainVolume()
 
 # def on_connect(client, userdata, flags, rc):
 #     #print("connected with connection status: "+str(rc))
@@ -58,7 +58,7 @@ while True:
     tagDict["wind/direction"]=windVane.getAngle()
 
     # Rain sensor
-    # TODO
+    tagDict["rain/lastFiveSecs"]=bucket.getBucketDrops()
     
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
