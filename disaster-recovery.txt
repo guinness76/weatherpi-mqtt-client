@@ -40,15 +40,28 @@ Two files should be listed. If not, go back and check the wiring for the sensor.
 13) Run this command and make sure tags show up on the Ignition gateway under '[MQTT Engine]weatherpi/sensors':
 $ manually-run-sensors-to-mqtt.sh
 
-Systemd installation:
-1) $ chmod 644 mqtt.service
-2) $ sudo cp mqtt.service /lib/systemd/system
-3) $ sudo systemctl daemon-reload
-4) $ sudo systemctl enable mqtt.service
-5) $ systemctl enable systemd-networkd.service systemd-networkd-wait-online.service
-6) $ sudo reboot
-7) Check the status of the service:
-$ sudo systemctl status mqtt.service
+14) Autostart mqtt script via systemd:
+    1) $ chmod 644 mqtt.service
+    2) $ sudo cp mqtt.service /lib/systemd/system
+    3) $ sudo systemctl daemon-reload
+    4) $ sudo systemctl enable mqtt.service
+    5) $ systemctl enable systemd-networkd.service systemd-networkd-wait-online.service
+    6) $ sudo reboot
+    7) Check the status of the service:
+    $ sudo systemctl status mqtt.service
+
+15) Install mariadb on the Ignition gateway
+    1) $ sudo apt-get update
+    2) $ sudo apt-get install mariadb-server -y
+    3) $ sudo mysql_secure_installation
+    4) $ mysql -uroot -p SOME_PASSWORD
+    5)  Configure the database and the user
+        1) create database weatherpi;
+        2) create user pi@'%' identified by 'SOME_OTHER_PASSWORD';
+        3) use weatherpi;
+        4) grant all privileges on weatherpi to 'pi';
+        5) flush privileges;
+        6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
 Weather project
 https://www.electromaker.io/project/view/build-your-own-weather-station#
