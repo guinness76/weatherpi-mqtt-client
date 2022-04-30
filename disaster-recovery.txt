@@ -63,6 +63,13 @@ $ manually-run-sensors-to-mqtt.sh
         5) flush privileges;
         6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
+16) Git credential setup (avoids need to keep typing username and password)
+    1) $ git config credential.helper store
+    2) $ git push (or any git operation that needs username and password)
+    3) Enter username and password. This should be the only time you need to do this. Git operations after this should not ask for the user and password.
+    4) Note that Github now requires you to use a personal access token. This can be aquired from github.com -> Settings -> Developer settings -> Personal Access Tokens.
+
+
 Weather project
 https://www.electromaker.io/project/view/build-your-own-weather-station#
 
