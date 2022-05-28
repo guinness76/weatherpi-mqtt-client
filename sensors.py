@@ -156,9 +156,14 @@ class WindVane():
     def __init__(self):
         self.adc = MCP3008(channel=0)
         self.vref = 3.3
+        self.last_angle = -1
     
         # Values are calculated based on the Vout = Vin * R2/(R1 + R2) where 3.3 volts is used as Vin.
         # More info on the data sheet: https://www.argentdata.com/files/80422_datasheet.pdf
+        # TODO Instant angle is -1! Measured voltage=2.600000 volts
+        # TODO Instant angle is -1! Measured voltage=1.700000 volts
+        # TODO Instant angle is -1! Measured voltage=1.900000 volts
+        # TODO Instant angle is -1! Measured voltage=2.500000 volts
         self.angles = {}
         self.angles[0.4]=0
         self.angles[1.4]=22.5
@@ -188,7 +193,134 @@ class WindVane():
         if (vout in self.angles):
             return self.angles[vout]
         else:
+            print("Instant angle is -1! Measured voltage=%f volts" % vout)
             return -1
+
+    def calculateAvgAngleInternal(self, angle0, angle1):
+        # accSin = 0.0
+        # accCos = 0.0
+
+        # #if (a+180)mod 360 == b then
+        # #   return (a+b)/2 mod 360 and ((a+b)/2 mod 360) + 180 (they are both the solution, so you may choose one depending if you prefer counterclockwise or clockwise direction)
+        # #else
+        # #return arctan(  (sin(a)+sin(b)) / (cos(a)+cos(b) ) 
+
+        # if (angles[0]+180) % 360 == angles[1]:
+        #     print("Calculating using mod")
+        #     solution1 = ((angles[0] + angles[1]) / 2) % 360
+        #     solution2 = (((angles[0] + angles[1]) / 2) % 360) + 180
+        #     print("solution1=%d degrees and solution2=%d degrees" % (solution1,solution2))
+        # else:
+        #     print("Calculating using arctan")
+        #     r0 = math.radians(angles[0])
+        #     r1 = math.radians(angles[1])
+
+        #     accSin = math.sin(r0) + math.sin(r1)
+        #     accCos = math.cos(r0) + math.cos(r0)
+
+        #     s = accSin / 2.0
+        #     c = accCos / 2.0
+
+        #     sum = 0.0
+        #     if (accCos > 0.0):
+        #         sum = accSin / accCos
+
+        #     solutionR = math.atan(sum)
+        #     solutionD = math.degrees(solutionR)
+        #     print ("Arctan solution=%d degrees" % solutionD)
+
+        # for angle in angles:
+        #     radian = math.radians(angle)
+        #     accSin += math.sin(radian)
+        #     accCos += math.cos(radian)
+        #     print ("For angle %d (radian %f), sine=%f, cos=%f" % (angle, radian, math.sin(radian), math.cos(radian)))
+
+        # flen = float(len(angles))
+        # s = accSin / flen
+        # c = accCos / flen
+
+        # sum = 0.0
+        # if (accCos > 0.0):
+        #     sum = accSin / accCos
+
+
+        # arctan = math.atan(sum)
+        # print ("-->Alternate arctan=%f radians, %f degrees" % (arctan, math.degrees(arctan)))
+        
+        # #return 0    # todo temp
+
+        # # #print ("accSin=%f, accCos=%f, s=%f, c=%f" % (accSin, accCos, s, c))
+        # tan = 0.0
+        # if (c > 0.0):
+        #     tan = math.atan(s / c)
+        # #print ("accSin=%f, accCos=%f, arctan=%f, s=%f, c=%f" % (accSin, accCos, tan, s, c))    
+        # arc = math.degrees(tan)
+        # print ("arc=%d" % arc)
+        # # average = 0.0
+
+        # # if s > 0 and c > 0:
+        # #     average = arc
+        # # elif c < 0:
+        # #     average = arc + 180
+        # # elif s < 0 and c > 0:
+        # #     average = arc + 360
+
+        # # return 0.0 if average == 360 else average
+
+        # return 0    # todo temp
+
+        # First, we need to find the quadrant of the 1st angle
+        radian0 = math.radians(angle0)
+        sin0 = math.sin(radian0)
+        cos0 = math.cos(radian0)
+
+        quadrant0 = 0
+        if sin0 >= 0 and cos0 >= 0:
+            quadrant0 = 1
+        elif sin0 >= 0 and cos0 < 0:
+            quadrant0 = 2
+        elif sin0 < 0 and cos0 < 0:
+            quadrant0 = 3
+        else:
+            quadrant0 = 4
+
+        # Next, we need to find the quadrant of the 2nd angle
+        radian1 = math.radians(angle1)
+        sin1 = math.sin(radian1)
+        cos1 = math.cos(radian1)
+
+        quadrant1 = 0
+        if sin1 >= 0 and cos1 >= 0:
+            quadrant1 = 1
+        elif sin1 >= 0 and cos1 < 0:
+            quadrant1 = 2
+        elif sin1 < 0 and cos1 < 0:
+            quadrant1 = 3
+        else:
+            quadrant1 = 4
+
+        if quadrant1 < quadrant0:
+            # We have gone past 0 degrees. Need to compensate, otherwise we get incorrect values.
+            angle0Mod = angle0 + 360
+            calcMod = (angle0Mod+angle1)/2
+            return calcMod % 360
+        else:
+            return (angle0+angle1)/2
+
+    def getAvgAngle(self):
+        theAngle = self.getAngle()
+        if theAngle is not -1:
+            # Only track the angle if it is a legit value
+            if self.last_angle < 0:
+                self.last_angle = theAngle
+                return theAngle
+            else:
+                oldAngle = self.last_angle
+                self.last_angle = theAngle
+                avgAngle = self.calculateAvgAngleInternal(oldAngle, theAngle)
+                print ("Instant angle='%d' degrees, avg angle='%d' degrees, previous angle='%d' degrees" % (theAngle, avgAngle, oldAngle))
+                return avgAngle
+
 
 # Argent Data Systems rain volume sensor
 # Connected to GPIO 6 (pin 31) and ground (pin 39 for convenience)

@@ -50,7 +50,16 @@ $ manually-run-sensors-to-mqtt.sh
     7) Check the status of the service:
     $ sudo systemctl status mqtt.service
 
-15) Install mariadb on the Ignition gateway
+15) Autostart shutoff-via-button service via systemd. This will execute Pi shutdown sequence from an external button press.
+    1) $ chmod 644 shutoff-via-button.service
+    2) $ sudo cp shutoff-via-button.service /lib/systemd/system
+    3) $ sudo systemctl daemon-reload 
+    4) $ sudo systemctl enable shutoff-via-button.service
+    5) $ sudo reboot
+    6) Check the status of the service:
+    $ sudo systemctl status shutoff-via-button.service
+
+16) Install mariadb on the Ignition gateway
     1) $ sudo apt-get update
     2) $ sudo apt-get install mariadb-server -y
     3) $ sudo mysql_secure_installation
@@ -63,7 +72,7 @@ $ manually-run-sensors-to-mqtt.sh
         5) flush privileges;
         6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
-16) Git credential setup (avoids need to keep typing username and password)
+17) Git credential setup (avoids need to keep typing username and password)
     1) $ git config credential.helper store
     2) $ git push (or any git operation that needs username and password)
     3) Enter username and password. This should be the only time you need to do this. Git operations after this should not ask for the user and password.

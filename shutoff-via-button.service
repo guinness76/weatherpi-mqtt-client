@@ -1,0 +1,9 @@
+ [Unit]
+ Description=WeatherPi Shutoff Service
+
+ [Service]
+ Type=idle
+ ExecStart=/usr/bin/python3 /home/pi/weatherpi-mqtt-client/shutoff-via-button.py > /home/pi/weather-mqtt-client/weather.log 2>&1
+
+ [Install]
+ WantedBy=multi-user.target

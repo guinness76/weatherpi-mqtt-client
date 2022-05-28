@@ -41,24 +41,33 @@ client.connect(broker_address, 1883)
 
 client.loop_start()
 
+atmoSensorsEnabled = True
+tempProbeEnabled = False
+windSensorsEnabled = True
+rainSensorEnabled = False
+
 while True:
     tagDict = {}
 
     # Atmospheric sensors
-    tagDict["bme680/ambientTemp"]=bme680.getTemperature() # Temp is Centrigrade
-    tagDict["bme680/humidity"]=bme680.getHumidity() # Humidity is a float percentage between 0% and 100%
-    tagDict["bme680/gas"]=bme680.getGas() # Gas is ohms
-    tagDict["bme680/pressure"]=bme680.getPressure() # Pressure is hPa
+    if atmoSensorsEnabled:
+        tagDict["bme680/ambientTemp"]=bme680.getTemperature() # Temp is Centrigrade
+        tagDict["bme680/humidity"]=bme680.getHumidity() # Humidity is a float percentage between 0% and 100%
+        tagDict["bme680/gas"]=bme680.getGas() # Gas is ohms
+        tagDict["bme680/pressure"]=bme680.getPressure() # Pressure is hPa
 
     # Temperature probe
-    tagDict["temp-probe/temperature"]=tempProbe.read_temp()
+    if tempProbeEnabled:
+        tagDict["temp-probe/temperature"]=tempProbe.read_temp()
 
     # Wind sensors
-    tagDict["wind/speed"]=windSpeed.getKmPerHour()
-    tagDict["wind/direction"]=windVane.getAngle()
+    if windSensorsEnabled:
+        tagDict["wind/speed"]=windSpeed.getKmPerHour()
+        tagDict["wind/direction"]=windVane.getAvgAngle()
 
     # Rain sensor
-    tagDict["rain/lastFiveSecs"]=bucket.getBucketDrops()
+    if rainSensorEnabled:
+        tagDict["rain/lastFiveSecs"]=bucket.getBucketDrops()
     
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
