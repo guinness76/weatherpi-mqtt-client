@@ -7,40 +7,45 @@ $ sudo apt update
 4) Install paho MQTT client https://github.com/eclipse/paho.mqtt.python
 $ pip3 install paho-mqtt
 
-5) Install VSCode
+5) Enable these interfaces under Raspberry Pi configuration:
+    1) serial port (status LED)
+    2) I2C (BME680 atmospheric sensors)
+    3) SPI bus (wind vane and anemometer)
+
+6) Install VSCode
 $ sudo apt install code -y
 
-6) Edit /boot/config.txt and add or uncomment the following lines:
+7) Edit /boot/config.txt and add or uncomment the following lines:
 dtparam=i2c_arm=on
 dtoverlay=w1-gpio
 
-7) Add the following lines to /etc/modules:
+8) Add the following lines to /etc/modules:
 i2c-dev
 i2c-bcm2708
 w1-gpio
 w1-therm
 
-8) Get the following package
+9) Get the following package
 sudo apt-get install i2c-tools
 
-9) Reboot the Pi. After reboot the device /dev/i2c-1 should be present.
+10) Reboot the Pi. After reboot the device /dev/i2c-1 should be present.
 
-10) Run this command to see devices connected to the I2C bus:
+11) Run this command to see devices connected to the I2C bus:
 i2cdetect -y 1
 
-11) Installing Python drivers for the BME680 temp/humidity sensor on the Pi3 (https://github.com/adafruit/Adafruit_CircuitPython_BME680):
+12) Installing Python drivers for the BME680 temp/humidity sensor on the Pi3 (https://github.com/adafruit/Adafruit_CircuitPython_BME680):
 $ pip3 install adafruit-circuitpython-lis3dh
 $ pip3 install adafruit-circuitpython-bme680
 
-12) Run this command to check on the status of the temp probe sensor:
+13) Run this command to check on the status of the temp probe sensor:
 $ ls /sys/bus/w1/devices/
 
 Two files should be listed. If not, go back and check the wiring for the sensor.
 
-13) Run this command and make sure tags show up on the Ignition gateway under '[MQTT Engine]weatherpi/sensors':
+14) Run this command and make sure tags show up on the Ignition gateway under '[MQTT Engine]weatherpi/sensors':
 $ manually-run-sensors-to-mqtt.sh
 
-14) Autostart mqtt script via systemd:
+15) Autostart mqtt script via systemd:
     1) $ chmod 644 mqtt.service
     2) $ sudo cp mqtt.service /lib/systemd/system
     3) $ sudo systemctl daemon-reload
@@ -50,7 +55,7 @@ $ manually-run-sensors-to-mqtt.sh
     7) Check the status of the service:
     $ sudo systemctl status mqtt.service
 
-15) Autostart shutoff-via-button service via systemd. This will execute Pi shutdown sequence from an external button press.
+16) Autostart shutoff-via-button service via systemd. This will execute Pi shutdown sequence from an external button press.
     1) $ chmod 644 shutoff-via-button.service
     2) $ sudo cp shutoff-via-button.service /lib/systemd/system
     3) $ sudo systemctl daemon-reload 
@@ -59,7 +64,7 @@ $ manually-run-sensors-to-mqtt.sh
     6) Check the status of the service:
     $ sudo systemctl status shutoff-via-button.service
 
-16) Install mariadb on the Ignition gateway
+17) Install mariadb on the Ignition gateway
     1) $ sudo apt-get update
     2) $ sudo apt-get install mariadb-server -y
     3) $ sudo mysql_secure_installation
@@ -72,7 +77,7 @@ $ manually-run-sensors-to-mqtt.sh
         5) flush privileges;
         6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
-17) Git credential setup (avoids need to keep typing username and password)
+18) Git credential setup (avoids need to keep typing username and password)
     1) $ git config credential.helper store
     2) $ git push (or any git operation that needs username and password)
     3) Enter username and password. This should be the only time you need to do this. Git operations after this should not ask for the user and password.
