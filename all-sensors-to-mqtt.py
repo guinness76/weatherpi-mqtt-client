@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 import paho.mqtt.client as mqtt
 from sensors import BME680, DS18B20, WindSpeed, WindVane, RainVolume
+from gpiozero import LED
 
 # Read weatherpi.properties
 config = configparser.RawConfigParser()
@@ -24,6 +25,8 @@ bme680 = BME680()
 windSpeed = WindSpeed(measure_interval_secs)
 windVane = WindVane()
 bucket = RainVolume()
+
+mqtt_led = LED(12)
 
 # def on_connect(client, userdata, flags, rc):
 #     #print("connected with connection status: "+str(rc))
@@ -48,6 +51,8 @@ rainSensorEnabled = False
 
 while True:
     tagDict = {}
+    # Turn off the LED. It will be turned on again when we confirm the message goes through.
+    mqtt_led.off()
 
     # Atmospheric sensors
     if atmoSensorsEnabled:
@@ -72,6 +77,7 @@ while True:
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     client.publish(topic, json.dumps(tagDict))
+    mqtt_led.on()
 
     # Reset the wind and rain objects, since they measure a quantity collected every 5 seconds
     windSpeed.resetRotationCount()

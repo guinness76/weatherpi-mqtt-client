@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import os, sys, json
+import time
 from datetime import datetime
+from gpiozero import LED
 
 import paho.mqtt.client as mqtt
 
@@ -8,6 +10,10 @@ broker_address="192.168.1.184"
 username="pi"
 password="brewme18"
 topic = "sensors"
+mqtt_led = LED(12)
+
+# Turn off the LED. It will be turned on again when we confirm the message goes through.
+mqtt_led.off()
 
 def on_connect(client, userdata, flags, rc):
     print("connected with connection status: "+str(rc))
@@ -18,6 +24,8 @@ def on_connect(client, userdata, flags, rc):
     client.publish(topic, json.dumps(tagDict))
     print("Message processing complete")
     client.disconnect()
+    mqtt_led.on()   # Turn on the LED for a second to confirm the message went through.
+    time.sleep(1)
 
 
 client = mqtt.Client("mytest")
