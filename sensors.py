@@ -161,7 +161,6 @@ class WindVane():
         # TODO Instant angle is -1! Measured voltage=2.600000 volts
         # TODO Instant angle is -1! Measured voltage=1.700000 volts
         # TODO Instant angle is -1! Measured voltage=1.900000 volts
-        # TODO Instant angle is -1! Measured voltage=2.500000 volts
         self.angles = {}
         self.angles[0.4]=0
         self.angles[1.4]=22.5
@@ -171,6 +170,7 @@ class WindVane():
         self.angles[2.9]=112.5
         self.angles[2.2]=135
         self.angles[2.3]=157.5
+        self.angles[2.5]=169
         self.angles[1.8]=180
         self.angles[2.0]=202.5
         self.angles[0.7]=225
