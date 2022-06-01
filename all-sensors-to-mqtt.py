@@ -68,7 +68,7 @@ while True:
     # Wind sensors
     if windSensorsEnabled:
         tagDict["wind/speed"]=windSpeed.getKmPerHour()
-        tagDict["wind/direction"]=windVane.getAvgAngle()
+        tagDict["wind/direction"]=windVane.getAngle()
 
     # Rain sensor
     if rainSensorEnabled:
