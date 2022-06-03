@@ -45,9 +45,9 @@ client.connect(broker_address, 1883)
 client.loop_start()
 
 atmoSensorsEnabled = True
-tempProbeEnabled = False
+tempProbeEnabled = True
 windSensorsEnabled = True
-rainSensorEnabled = False
+rainSensorEnabled = True
 
 while True:
     tagDict = {}
@@ -72,7 +72,7 @@ while True:
 
     # Rain sensor
     if rainSensorEnabled:
-        tagDict["rain/lastFiveSecs"]=bucket.getBucketDrops()
+        tagDict["rain/inchesLastFiveSecs"]=bucket.getVolumeInches()
     
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')

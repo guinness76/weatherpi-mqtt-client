@@ -253,7 +253,7 @@ class WindVane():
 # Connected to GPIO 6 (pin 31) and ground (pin 39 for convenience)
 class RainVolume():
     def __init__(self):
-        self.mm_per_drop = 0.2794
+        self.inches_per_drop = 0.011
         self.drops = 0
         self.rainBucket = Button(6)
         self.rainBucket.when_pressed = self.onBucketDrop
@@ -265,9 +265,9 @@ class RainVolume():
     def getBucketDrops(self):
         return self.drops
 
-    # Returns the volume in mm that has been recorded since the last reset.
-    def getVolumeMM(self):
-        return self.drops * self.mm_per_drop
+    # Returns the volume in inches that has been recorded since the last reset.
+    def getVolumeInches(self):
+        return self.drops * self.inches_per_drop
 
     def resetBucketDrops(self):
         self.drops = 0

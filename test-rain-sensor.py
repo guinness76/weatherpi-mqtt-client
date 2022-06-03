@@ -18,6 +18,7 @@ while acc<5:
     acc += 1
 
 drops = bucket.getBucketDrops()
-print("At the end of 5 seconds, %d bucket drop(s) recorded." % drops)
+inches = bucket.getVolumeInches()
+print("At the end of 5 seconds, %d bucket drop(s) recorded, corresponding to %f inches" % (drops, inches))
 bucket.resetBucketDrops()
 print("----- Rain sensor test complete -----")
