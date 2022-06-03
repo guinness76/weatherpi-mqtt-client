@@ -47,14 +47,14 @@ $ ls /sys/bus/w1/devices/
 Two files should be listed. If not, go back and check the wiring for the sensor.
 
 14) Run this command and make sure tags show up on the Ignition gateway under '[MQTT Engine]weatherpi/sensors':
-$ manually-run-sensors-to-mqtt.sh
+$ all-sensors-to-mqtt.py
 
 15) Autostart mqtt script via systemd:
     1) $ chmod 644 mqtt.service
     2) $ sudo cp mqtt.service /lib/systemd/system
     3) $ sudo systemctl daemon-reload
     4) $ sudo systemctl enable mqtt.service
-    5) $ systemctl enable systemd-networkd.service systemd-networkd-wait-online.service
+    5) $ sudo systemctl enable systemd-networkd.service systemd-networkd-wait-online.service
     6) $ sudo reboot
     7) Check the status of the service:
     $ sudo systemctl status mqtt.service
