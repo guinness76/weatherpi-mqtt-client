@@ -16,7 +16,7 @@ $ pip3 install paho-mqtt
     2) I2C (BME680 atmospheric sensors)
     3) SPI bus (wind vane and anemometer)
 
-6) Install VSCode
+6) Install VSCode (optional, but highly recommended)
 $ sudo apt install code -y
 
 7) Edit /boot/config.txt and add or uncomment the following lines:
@@ -86,7 +86,7 @@ $ all-sensors-to-mqtt.py
         5) flush privileges;
         6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
-19) Git credential setup (avoids need to keep typing username and password)
+19) Git credential setup (optional, but avoids need to keep typing username and password)
     1) $ git config credential.helper store
     2) $ git push (or any git operation that needs username and password)
     3) Enter username and password. This should be the only time you need to do this. Git operations after this should not ask for the user and password.
