@@ -1,6 +1,6 @@
 Note: to clone from https://github.com/guinness76/weatherpi-mqtt-client.git you need to provide a personal access token as the password. It should be stored in a password manager. If not found, a new one can be generated in Gitub via Settings -> Developer Settings -> Personal access tokens.
 
-After cloning, you need to copy weatherpi-mqtt-client/weatherpi.properties.empty to weatherpi.properties. Then fill in the MQTT server settings. For the broker address, use the IP address of the Ignition gateway only, do not specify a port. For the user and password settings, specify the user name and password that is used in the Users section of the MQTT Distributor settings.
+After cloning, you need to copy weatherpi-mqtt-client/weatherpi.properties.empty to weatherpi.properties. Then fill in the MQTT server settings. For the broker address, use the IP address of the Raspberry Pi 4 running the Ignition gateway, do not specify a port. For the user and password settings, specify the user name and password that is used in the Users section of the MQTT Distributor settings.
 
 System installation:
 1) Verify system is up to date
@@ -68,7 +68,12 @@ $ all-sensors-to-mqtt.py
     6) Check the status of the service:
     $ sudo systemctl status shutoff-via-button.service
 
-17) Install mariadb on the Ignition gateway
+17) Install Ignition Maker Edition on the Raspberry Pi 4
+    1) Download latest Ignition zip (ARM HF 32-bit) from https://inductiveautomation.com/downloads/
+    2) Unzip on the Pi 4 and start the gateway. Configure it for Maker edition. 
+    3) Restore ignition-gateway/weatherpi.gwbk. Note that after the gateway restart, the credentials are user=pi, pw=Brew^me18
+
+18) Install MariaDB on the Raspberry Pi 4
     1) $ sudo apt-get update
     2) $ sudo apt-get install mariadb-server -y
     3) $ sudo mysql_secure_installation
@@ -81,7 +86,7 @@ $ all-sensors-to-mqtt.py
         5) flush privileges;
         6) Test the login: $ mysql -upi -pSOME_OTHER_PASSWORD
 
-18) Git credential setup (avoids need to keep typing username and password)
+19) Git credential setup (avoids need to keep typing username and password)
     1) $ git config credential.helper store
     2) $ git push (or any git operation that needs username and password)
     3) Enter username and password. This should be the only time you need to do this. Git operations after this should not ask for the user and password.
