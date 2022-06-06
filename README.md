@@ -13,11 +13,19 @@ The Pi Zero runs a Python script that regularly retrieves weather sensor data fr
 The following sensors are currently connected to the Pi Zero to provide weather data.
 
 ### BME280 Atmospheric sensors
-The BME280 package provides ambient temperature, humidity, pressure, and air quality sensors. 
+The BME280 package provides ambient temperature, humidity, pressure, and air quality sensors. The BME280 communicates over the Pi Zero's I2C bus.
 
 The air quality sensor measures the gas in the ambient air and provides a resistance reading. The lower the reading, the worse air quality is. However, the measured resistance is not in relation to any other known air quality values, so its readings can only be compared to its past readings to give a relative idea of current air quality.
 
 The ambient temperature sensor is not used in this project, as it was found that a temperature probe positioned under an awning gave more accurate temperature readings. The BME280 sensor was placed in an enclosure next to the Raspberry Pi 0's enclosure, and tended to heat up much more than the ambient air on hot days.
 
 ### Temperature probe
-This is a waterproof probe connected to the Pi Zero. It can be used to measure ground temperature (to monitor for freezing ground temperature for example), or it can be used to measure ambient air temperature. Ambient air temperature measurements are only accurate as long as the probe is maintained in the shade, away from any structures or equipment that might retain heat.
+This is a waterproof probe model DS18B20 connected to the Pi Zero via the GPIO pins. It can be used to measure ground temperature (to monitor for freezing ground temperature for example), or it can be used to measure ambient air temperature. Ambient air temperature measurements are only accurate as long as the probe is maintained in the shade, away from any structures or equipment that might retain heat.
+
+### Wind sensors
+There are two devices in use to measure wind: an anemometer to measure wind velocity, and a wind vane to measure the direction that the wind is coming from. I found that the wind vane will sometimes wildly change direction when a wind gust comes along, so measuring the direction of the vane at any instant can give some strange reading. To get around this, the Ignition software records the instant direction once every 5 seconds, then averages the values of the last minute to determine the overall wind direction. This works well to smooth out the direction signal.
+
+The anemometer connects to the Pi Zero via the SPI bus. The wind vane needs a MCP3008 analog to digital converter as the Pi cannot handle analog inputs directly.
+
+# Rain sensor
+This sensor uses small buckets to collect rain. Each time the bucket is filled and drops, this triggers a "button" press on the Pi Zero. The Pi can then record the bucket drop event and report it to the Ignition gateway. The rain sensor connects to the Pi Zero via GPIO pins.
