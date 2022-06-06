@@ -27,5 +27,5 @@ There are two devices in use to measure wind: an anemometer to measure wind velo
 
 The anemometer connects to the Pi Zero via the SPI bus. The wind vane needs a MCP3008 analog to digital converter as the Pi cannot handle analog inputs directly.
 
-# Rain sensor
+### Rain sensor
 This sensor uses small buckets to collect rain. Each time the bucket is filled and drops, this triggers a "button" press on the Pi Zero. The Pi can then record the bucket drop event and report it to the Ignition gateway. The rain sensor connects to the Pi Zero via GPIO pins.
