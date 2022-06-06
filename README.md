@@ -35,4 +35,4 @@ The anemometer connects to the Pi Zero via the SPI bus. The wind vane needs a MC
 This sensor uses small buckets to collect rain. Each time the bucket is filled and drops, this triggers a "button" press on the Pi Zero. The Pi can then record the bucket drop event and report it to the Ignition gateway. The rain sensor connects to the Pi Zero via GPIO pins.
 
 # Installation Instructions
-Follow the step-by-step instructions in installation.txt. The instructions assume that you have both a Raspberry Pi 4 and a Raspberry Pi Zero, and one or more of the sensors detailed above.
+Follow the step-by-step instructions in `installation.txt`. The instructions assume that you have both a Raspberry Pi 4 and a Raspberry Pi Zero, and one or more of the sensors detailed above.
