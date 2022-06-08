@@ -71,7 +71,8 @@ $ all-sensors-to-mqtt.py
 17) Install Ignition Maker Edition on the Raspberry Pi 4
     1) Download latest Ignition zip (ARM HF 32-bit) from https://inductiveautomation.com/downloads/
     2) Unzip on the Pi 4 and start the gateway. Configure it for Maker edition. 
-    3) Restore ignition-gateway/weatherpi.gwbk. Note that after the gateway restart, the credentials are user=pi, pw=Brew^me18
+    3) Restore ignition-gateway/weatherpi.gwbk. Note that after the gateway restarts, the default credentials are user=pi, pw=Brew^me18
+    4) After restoration, you really want to change the password for the pi user on the gateway, especially if the gateway is public facing in any way.
 
 18) Install MariaDB on the Raspberry Pi 4
     1) $ sudo apt-get update

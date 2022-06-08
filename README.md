@@ -2,7 +2,11 @@
 This project has two major components: a Raspberry Pi 4 running an [Ignition gateway server](https://inductiveautomation.com), and a Raspberry Pi Zero that measures weather sensors. The Pi Zero transmits the sensor data to the Ignition gateway via the [MQTT protocol](https://docs.chariot.io). The Ignition gateway captures and displays the raw data from the sensors, and stores historical data in a MariaDB database running on the Pi 4. Inspiration for this project was heavily influenced by [electromaker.io](https://www.electromaker.io/project/view/build-your-own-weather-station)
 
 # Pi 4 Server
-The server runs a non-commercial version of the Ignition SCADA software platform known as the [Maker edition](https://docs.inductiveautomation.com/display/DOC81/Ignition+Maker+Edition). This version is free to use for personal projects only, and requires a stable Internet connection to occasionally contact the Inductive Automation licensing servers. The gateway runs a visualization system known as Perspective to display the weather sensor data in a browser window. Sensor data is held in data structures called "tags". Each tag holds a specific sensor value. Tag values can be written to a MariaDB database using the Ignition historian module. This allows past values of each sensor to be retrieved later and displayed on a trend chart.
+The server runs a non-commercial version of the Ignition SCADA software platform known as the [Maker edition](https://docs.inductiveautomation.com/display/DOC81/Ignition+Maker+Edition). This version is free to use for personal projects only, and requires a stable Internet connection to occasionally contact the Inductive Automation licensing servers. 
+
+The gateway runs a MQTT server using the [Cirrus Link](https://cirrus-link.com/mqtt-software-for-iiot-scada) MQTT Distributor module and the MQTT Engine module. The modules need to be installed in the Ignition gateway for this project. They can be downloaded from from the [Inductive Automation website](https://inductiveautomation.com/downloads/third-party-modules) and installed in the Ignition gateway. The `ignition-gateway/weatherpi.gwbk` gateway backup file contains MQTT settings that utilize these modules. After the .gwbk file is used to restore the gateway, an MQTT server will be set up that is ready to accept data from a MQTT client running on a Raspberry Pi Zero. Note that after using the .gwbk restoration file, you should update the password for the pi user in the gateway settings.
+
+The gateway runs a visualization system known as Perspective to display the weather sensor data in a browser window. Sensor data is held in data structures called "tags". Each tag holds a specific sensor value. Tag values can be written to a MariaDB database using the Ignition historian module. This allows past values of each sensor to be retrieved later and displayed on a trend chart.
 Ignition designer with sensor tags:
 ![Ignition designer screenshot](/ignition-gateway/perspective-screenshots/designer.png)
 
@@ -29,3 +33,6 @@ The anemometer connects to the Pi Zero via the SPI bus. The wind vane needs a MC
 
 ### Rain sensor
 This sensor uses small buckets to collect rain. Each time the bucket is filled and drops, this triggers a "button" press on the Pi Zero. The Pi can then record the bucket drop event and report it to the Ignition gateway. The rain sensor connects to the Pi Zero via GPIO pins.
+
+# Installation Instructions
+Follow the step-by-step instructions in `installation.txt`. The instructions assume that you have both a Raspberry Pi 4 and a Raspberry Pi Zero, and one or more of the sensors detailed above.
