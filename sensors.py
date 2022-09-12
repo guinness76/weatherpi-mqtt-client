@@ -23,9 +23,9 @@ class BME680():
 
         try:
             self.bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c)
-            
+
             # change this to match the location's pressure (hPa) at sea level
-            self.bme680.sea_level_pressure = 1013.25     
+            self.bme680.sea_level_pressure = 1013.25
         except ValueError as e:
             print("Exception thrown while initializing atmospheric sensors: %s" % e)
             self.bme680 = None
@@ -69,17 +69,17 @@ class DS18B20():
             self.device_file = None
         else:
             self.device_file = glob.glob("/sys/bus/w1/devices/28*")[0] + "/w1_slave"
-        
+
     def read_temp_raw(self):
         f = open(self.device_file, "r")
         lines = f.readlines()
         #print(lines)
         f.close()
         return lines
-        
+
     def crc_check(self, lines):
         return lines[0].strip()[-3:] == "YES"
-        
+
     def read_temp(self):
         if self.device_file is None:
             print("Temp sensor probe is not connected!")
@@ -87,23 +87,23 @@ class DS18B20():
 
         temp_c = -255
         attempts = 0
-        
+
         lines = self.read_temp_raw()
         success = self.crc_check(lines)
-        
+
         while not success and attempts < 3:
             time.sleep(.2)
-            lines = self.read_temp_raw()            
+            lines = self.read_temp_raw()
             success = self.crc_check(lines)
             attempts += 1
-        
+
         if success:
             temp_line = lines[1]
-            equal_pos = temp_line.find("t=")            
+            equal_pos = temp_line.find("t=")
             if equal_pos != -1:
                 temp_string = temp_line[equal_pos+2:]
                 temp_c = float(temp_string)/1000.0
-        
+
         return temp_c
 
 # Argent Data Systems wind speed and wind direction sensors- read via SPI bus on the Pi
@@ -136,9 +136,9 @@ class WindSpeed():
         self.rotationCount = 0
 
 # Wind direction vane: uses MCP3008 analog to digital converter as the Pi cannot handle analog inputs directly.
-# It converts the current resistance of the vane to one of 16 different voltage readings that correspond to the 
+# It converts the current resistance of the vane to one of 16 different voltage readings that correspond to the
 # angle of the vane.
-# Vin (3.3v) 
+# Vin (3.3v)
 # Pin 1 (CH0) of MCP3008
 #
 # Other MCP3008 connections:
@@ -155,7 +155,7 @@ class WindVane():
         self.adc = MCP3008(channel=0)
         self.vref = 3.3
         self.last_angle = -1
-    
+
         # Values are calculated based on the Vout = Vin * R2/(R1 + R2) where 3.3 volts is used as Vin.
         # More info on the data sheet: https://www.argentdata.com/files/80422_datasheet.pdf
         # TODO Instant angle is -1! Measured voltage=2.600000 volts
@@ -271,3 +271,12 @@ class RainVolume():
 
     def resetBucketDrops(self):
         self.drops = 0
+
+class PiLightSensor():
+    def __init__(self):
+        self.adc = MCP3008(channel=1)
+        self.vref = 3.3
+
+    def getVoltage(self):
+        # The current value * 3.3 volts, makes it easier to measure with a meter. Rounded to 1 decimal place
+        return round(self.adc.value * self.vref, 1)
