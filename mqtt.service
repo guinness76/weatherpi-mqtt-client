@@ -1,12 +1,13 @@
- [Unit]
- Description=WeatherPi MQTT Service
+[Unit]
+Description=WeatherPi MQTT Service
 After=systemd-networkd-wait-online.service
 Wants=systemd-networkd-wait-online.service
 
- [Service]
- Type=idle
- ExecStartPre=/bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
- ExecStart=/usr/bin/python3 /home/pi/weatherpi-mqtt-client/all-sensors-to-mqtt.py > /home/pi/weather-mqtt-client/weather.log 2>&1
+[Service]
+Type=idle
+User=pi 
+ExecStartPre=/bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
+ExecStart=/usr/bin/python3 /home/pi/weatherpi-mqtt-client/all-sensors-to-mqtt.py > /home/pi/weather-mqtt-client/weather.log 2>&1
 
- [Install]
- WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
