@@ -79,7 +79,11 @@ class TempProbe():
             print ("Temp probe was not found!")
             return -255
         else:
-            return "{:.3f}".format(DS.read(False,4,self.tempProbe))
+            theVal = DS.read(False,4,self.tempProbe)
+            if theVal is not None:
+                return "{:.3f}".format(theVal)
+            else:
+                return -255
 
 # !!!DEPRECATED!!!
 # Watherproof temperature probe (DS18B20), connected directly to GPIO:
