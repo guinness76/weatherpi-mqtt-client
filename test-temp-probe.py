@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-from sensors import DS18B20
+from sensors import TempProbe
+tempProbe = TempProbe()
 
-tempSensor = DS18B20()
-print("Temp probe: %s C" % tempSensor.read_temp())
+print("Temp probe: %s C" % tempProbe.read_temp())
 print("----- Temp probe test complete -----")

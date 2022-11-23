@@ -4,7 +4,7 @@ import configparser
 from datetime import datetime
 import time
 import paho.mqtt.client as mqtt
-from sensors import BME680, DS18B20, WindSpeed, WindVane, RainVolume
+from sensors import BME680, TempProbe, WindSpeed, WindVane, RainVolume, PiLightSensor
 from gpiozero import LED
 
 # Read weatherpi.properties
@@ -20,11 +20,12 @@ password=mqtt_settings["password"]
 topic = "sensors"
 measure_interval_secs = 5
 
-tempProbe = DS18B20()
+tempProbe = TempProbe()
 bme680 = BME680()
 windSpeed = WindSpeed(measure_interval_secs)
 windVane = WindVane()
 bucket = RainVolume()
+light = PiLightSensor()
 
 mqtt_led = LED(12)
 
@@ -48,6 +49,7 @@ atmoSensorsEnabled = True
 tempProbeEnabled = True
 windSensorsEnabled = True
 rainSensorEnabled = True
+lightSensorEnabled = True
 
 while True:
     tagDict = {}
@@ -73,6 +75,13 @@ while True:
     # Rain sensor
     if rainSensorEnabled:
         tagDict["rain/inchesLastFiveSecs"]=bucket.getVolumeInches()
+
+   # Light sensor
+    if lightSensorEnabled:
+        tagDict["lightSensor/voltage"]=light.getVoltage()        
+
+    # WeatherPi current IP address
+    #hostname -I | awk '{print $1}'
     
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
