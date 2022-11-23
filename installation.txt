@@ -41,7 +41,17 @@ i2cdetect -y 1
 $ pip3 install adafruit-circuitpython-lis3dh
 $ pip3 install adafruit-circuitpython-bme680
 
-13) Run this command to check on the status of the temp probe sensor:
+13) Install BitBanger (https://github.com/danjperron/BitBangingDS18B20) to read the temp probe. This is more reliable than the built-in w1-gpio and w1-therm libraries.
+
+	a) On the Pi, cd to 'weatherpi-mqtt-client/BitBangingDS18B20-master/python'. Unzip 'BitBangingDS18B20-master' if needed.
+
+	b) Run:
+	sudo python3 setup.py install
+
+	c) Test:
+	python3 test.py
+
+13-DEPRECATED) Run this command to check on the status of the temp probe sensor:
 $ ls /sys/bus/w1/devices/
 
 Two files should be listed. If not, go back and check the wiring for the sensor.
