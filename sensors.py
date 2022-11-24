@@ -64,22 +64,30 @@ class BME680():
 # Ground (blue wire from sensor) connected to pin 6 (ground)
 # Data wire (yellow wire from sensor) connected to pin 7 (GPIO 4)
 class TempProbe():
-    def __init__(self):
-        # We are using GPIO 4
-        self.sensors = DS.scan(4)
+    # def __init__(self):
+    #     # We are using GPIO 4
+    #     self.sensors = DS.scan(4)
 
-        if len(self.sensors) == 0:
+    #     if len(self.sensors) == 0:
+    #         print ("Temp probe was not found!")
+    #     else:
+    #         DS.pinsStartConversion([4])
+    #         self.tempProbe = self.sensors[0]
+
+    def read_temp(self):
+        # We are using GPIO 4
+        sensors = DS.scan(4)
+
+        if len(sensors) == 0:
             print ("Temp probe was not found!")
         else:
             DS.pinsStartConversion([4])
-            self.tempProbe = self.sensors[0]
-
-    def read_temp(self):
-        if self.tempProbe is None:
+            tempProbe = sensors[0]
+        if tempProbe is None:
             print ("Temp probe was not found!")
             return -255
         else:
-            theVal = DS.read(False,4,self.tempProbe)
+            theVal = DS.read(False,4,tempProbe)
             if theVal is not None:
                 return "{:.3f}".format(theVal)
             else:
