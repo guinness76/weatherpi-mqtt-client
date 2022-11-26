@@ -78,11 +78,14 @@ class TempProbe():
         # We are using GPIO 4
         sensors = DS.scan(4)
 
+        tempProbe = None
         if len(sensors) == 0:
-            print ("Temp probe was not found!")
+            print ("Temp probe was not found! sensors list length was 0")
+            return -255
         else:
             DS.pinsStartConversion([4])
             tempProbe = sensors[0]
+
         if tempProbe is None:
             print ("Temp probe was not found!")
             return -255

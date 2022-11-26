@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import json
+import subprocess
 import configparser
 from datetime import datetime
 import time
@@ -51,6 +52,9 @@ windSensorsEnabled = True
 rainSensorEnabled = True
 lightSensorEnabled = True
 
+theResult = subprocess.run(["hostname", "-I"], stdout=subprocess.PIPE)
+ipAddr = theResult.stdout.decode('utf-8')
+
 while True:
     tagDict = {}
     # Turn off the LED. It will be turned on again when we confirm the message goes through.
@@ -65,7 +69,10 @@ while True:
 
     # Temperature probe
     if tempProbeEnabled:
-        tagDict["temp-probe/temperature"]=tempProbe.read_temp()
+        probeVal = tempProbe.read_temp()
+        # Only send if we have a good reading. Otherwise a bad value screws up the history.
+        if probeVal != "-255":
+            tagDict["temp-probe/temperature"]=probeVal
 
     # Wind sensors
     if windSensorsEnabled:
@@ -85,6 +92,7 @@ while True:
     
     # Last updated timestamp
     tagDict["diagnostics/lastUpdate"]=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    tagDict["diagnostics/ipAddr"]=ipAddr
     client.publish(topic, json.dumps(tagDict))
     mqtt_led.on()
 

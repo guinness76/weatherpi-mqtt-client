@@ -68,6 +68,10 @@ $ all-sensors-to-mqtt.py
     6) $ sudo reboot
     7) Check the status of the service:
     $ sudo systemctl status mqtt.service
+    8) To stop the service:
+        $ sudo systemctl stop mqtt.service
+    9) To start the service:
+        $ sudo systemctl start mqtt.service
 
 16) Autostart shutoff-via-button service via systemd. This will execute Pi shutdown sequence from an external button press.
     1) $ chmod 644 shutoff-via-button.service
