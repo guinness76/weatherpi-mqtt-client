@@ -81,20 +81,20 @@ class TempProbe():
         tempProbe = None
         if len(sensors) == 0:
             print ("Temp probe was not found! sensors list length was 0")
-            return -255
+            return None
         else:
             DS.pinsStartConversion([4])
             tempProbe = sensors[0]
 
         if tempProbe is None:
             print ("Temp probe was not found!")
-            return -255
+            return None
         else:
             theVal = DS.read(False,4,tempProbe)
             if theVal is not None:
                 return "{:.3f}".format(theVal)
             else:
-                return -255
+                return None
 
 # !!!DEPRECATED!!!
 # Watherproof temperature probe (DS18B20), connected directly to GPIO:

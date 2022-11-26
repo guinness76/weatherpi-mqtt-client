@@ -71,7 +71,7 @@ while True:
     if tempProbeEnabled:
         probeVal = tempProbe.read_temp()
         # Only send if we have a good reading. Otherwise a bad value screws up the history.
-        if probeVal != "-255":
+        if probeVal is not None:
             tagDict["temp-probe/temperature"]=probeVal
 
     # Wind sensors
