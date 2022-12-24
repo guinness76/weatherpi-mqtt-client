@@ -19,7 +19,7 @@ password=mqtt_settings["password"]
 
 # First part of the path is the topic. This value needs to be defined in Subscriptions in the MQTT engine custom namespace.
 topic = "sensors"
-measure_interval_secs = 5
+measure_interval_secs = 60
 
 tempProbe = TempProbe()
 bme680 = BME680()
