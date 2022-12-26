@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import sys
 import json
 import subprocess
 import configparser
@@ -54,6 +55,7 @@ lightSensorEnabled = True
 
 theResult = subprocess.run(["hostname", "-I"], stdout=subprocess.PIPE)
 ipAddr = theResult.stdout.decode('utf-8')
+print("Started weatherpi MQTT transmission at %s" % datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 while True:
     tagDict = {}
@@ -100,4 +102,5 @@ while True:
     windSpeed.resetRotationCount()
     bucket.resetBucketDrops()
 
+    sys.stdout.flush()
     time.sleep(measure_interval_secs)
